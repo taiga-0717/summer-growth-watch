@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Header } from "./Common";
 import { judgePass, fmtDate, sortByDateAsc } from "../lib/quiz";
+import SubjectMerge from "./SubjectMerge";
 
 export default function TeacherOverview({
   roster,
@@ -10,6 +11,8 @@ export default function TeacherOverview({
   onAddStudent,
   onDeleteStudent,
   onChangePasscode,
+  onMergeSubjects,
+  showToast,
 }) {
   const [tab, setTab] = useState("overview");
   const [newName, setNewName] = useState("");
@@ -23,6 +26,9 @@ export default function TeacherOverview({
         </button>
         <button className={`tab-btn ${tab === "roster" ? "active" : ""}`} onClick={() => setTab("roster")}>
           名簿管理
+        </button>
+        <button className={`tab-btn ${tab === "subjects" ? "active" : ""}`} onClick={() => setTab("subjects")}>
+          科目統合
         </button>
       </div>
 
@@ -46,7 +52,8 @@ export default function TeacherOverview({
           ) : (
             roster.map((s) => {
               const entries = resultsByStudent[s.name] || [];
-const sortedAsc = sortByDateAsc(entries);              const latest = sortedAsc[sortedAsc.length - 1];
+              const sortedAsc = sortByDateAsc(entries);
+              const latest = sortedAsc[sortedAsc.length - 1];
               const recent = sortedAsc.slice(-14);
               return (
                 <div key={s.id} className="teacher-row" onClick={() => onSelectStudent(s.name)}>
@@ -130,6 +137,10 @@ const sortedAsc = sortByDateAsc(entries);              const latest = sortedAsc[
             </button>
           </div>
         </>
+      )}
+
+      {tab === "subjects" && (
+        <SubjectMerge resultsByStudent={resultsByStudent} onMerge={onMergeSubjects} showToast={showToast} />
       )}
     </>
   );
