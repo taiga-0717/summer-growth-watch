@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Header } from "./Common";
-import { judgePass, fmtDate } from "../lib/quiz";
+import { judgePass, fmtDate, sortByDateAsc } from "../lib/quiz";
 
 export default function TeacherOverview({
   roster,
@@ -46,8 +46,7 @@ export default function TeacherOverview({
           ) : (
             roster.map((s) => {
               const entries = resultsByStudent[s.name] || [];
-              const sortedAsc = [...entries].sort((a, b) => a.ts - b.ts);
-              const latest = sortedAsc[sortedAsc.length - 1];
+const sortedAsc = sortByDateAsc(entries);              const latest = sortedAsc[sortedAsc.length - 1];
               const recent = sortedAsc.slice(-14);
               return (
                 <div key={s.id} className="teacher-row" onClick={() => onSelectStudent(s.name)}>
