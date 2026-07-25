@@ -21,3 +21,20 @@ export function todayStr() {
   const dd = String(d.getDate()).padStart(2, "0");
   return `${d.getFullYear()}-${mm}-${dd}`;
 }
+
+// テストの「日付」を基準に古い順で比較する(YYYY-MM-DD文字列なのでそのまま比較可能)。
+// 同じ日付の場合は入力したタイミング(ts)で順序を決める。
+export function compareByDate(a, b) {
+  if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+  return a.ts - b.ts;
+}
+
+// 日付の新しい順(降順)で並べたコピーを返す
+export function sortByDateDesc(entries) {
+  return [...entries].sort((a, b) => compareByDate(b, a));
+}
+
+// 日付の古い順(昇順)で並べたコピーを返す
+export function sortByDateAsc(entries) {
+  return [...entries].sort(compareByDate);
+}
