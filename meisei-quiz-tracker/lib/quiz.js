@@ -1,5 +1,8 @@
 export const PASS_THRESHOLD = 0.9;
 
+// 生徒が選ぶ科目の固定リスト
+export const SUBJECTS = ["国語(漢字テスト)", "数学", "英語(英単語テスト)", "社会", "理科"];
+
 export function judgePass(score, max) {
   if (!max || max <= 0) return false;
   return score / max >= PASS_THRESHOLD;
