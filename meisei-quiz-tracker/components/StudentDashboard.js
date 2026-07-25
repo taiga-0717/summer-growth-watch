@@ -1,12 +1,8 @@
 import { useState } from "react";
 import { Header, Hanko, HistoryRow } from "./Common";
-import { judgePass, todayStr, sortByDateDesc } from "../lib/quiz";
+import { judgePass, todayStr, sortByDateDesc, SUBJECTS } from "../lib/quiz";
 
-const NEW_SUBJECT_VALUE = "__new__";
-
-export default function StudentDashboard({ name, entries, knownSubjects, onBack, onAddResult, showToast }) {
-  const hasKnownSubjects = knownSubjects.length > 0;
-  const [customSubjectMode, setCustomSubjectMode] = useState(!hasKnownSubjects);
+export default function StudentDashboard({ name, entries, onBack, onAddResult, showToast }) {
   const [subject, setSubject] = useState("");
   const [date, setDate] = useState(todayStr());
   const [max, setMax] = useState("");
@@ -17,22 +13,12 @@ export default function StudentDashboard({ name, entries, knownSubjects, onBack,
   const sorted = sortByDateDesc(entries);
   const latest = sorted[0];
 
-  function handleSubjectSelect(e) {
-    const val = e.target.value;
-    if (val === NEW_SUBJECT_VALUE) {
-      setCustomSubjectMode(true);
-      setSubject("");
-    } else {
-      setSubject(val);
-    }
-  }
-
   async function handleSubmit(e) {
     e.preventDefault();
     const maxN = Number(max);
     const scoreN = Number(score);
 
-    if (!subject.trim() || !date || !(maxN > 0) || scoreN < 0) {
+    if (!subject || !date || !(maxN > 0) || scoreN < 0) {
       showToast("入力内容を確認してください");
       return;
     }
@@ -42,14 +28,13 @@ export default function StudentDashboard({ name, entries, knownSubjects, onBack,
     }
 
     setSubmitting(true);
-    const ok = await onAddResult(name, { subject: subject.trim(), date, max: maxN, score: scoreN });
+    const ok = await onAddResult(name, { subject, date, max: maxN, score: scoreN });
     setSubmitting(false);
 
     if (ok) {
-      setJustSubmitted({ subject: subject.trim(), score: scoreN, max: maxN, pass: judgePass(scoreN, maxN) });
+      setJustSubmitted({ subject, score: scoreN, max: maxN, pass: judgePass(scoreN, maxN) });
       showToast("記録しました");
       setSubject("");
-      setCustomSubjectMode(!hasKnownSubjects);
       setMax("");
       setScore("");
       setTimeout(() => setJustSubmitted(null), 2500);
@@ -87,42 +72,17 @@ export default function StudentDashboard({ name, entries, knownSubjects, onBack,
         <form onSubmit={handleSubmit}>
           <div className="form-grid">
             <div className="full">
-              <label>科目 / テスト名</label>
-              {!customSubjectMode ? (
-                <select value={subject} onChange={handleSubjectSelect} required>
-                  <option value="" disabled>
-                    選択してください
+              <label>科目</label>
+              <select value={subject} onChange={(e) => setSubject(e.target.value)} required>
+                <option value="" disabled>
+                  選択してください
+                </option>
+                {SUBJECTS.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
                   </option>
-                  {knownSubjects.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                  <option value={NEW_SUBJECT_VALUE}>＋ 新しい科目を入力</option>
-                </select>
-              ) : (
-                <>
-                  <input
-                    type="text"
-                    value={subject}
-                    onChange={(e) => setSubject(e.target.value)}
-                    placeholder="例: 英単語テスト"
-                    required
-                  />
-                  {hasKnownSubjects && (
-                    <button
-                      type="button"
-                      className="link-btn"
-                      onClick={() => {
-                        setCustomSubjectMode(false);
-                        setSubject("");
-                      }}
-                    >
-                      一覧から選ぶ
-                    </button>
-                  )}
-                </>
-              )}
+                ))}
+              </select>
             </div>
             <div>
               <label>日付</label>
