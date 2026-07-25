@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { Header, Hanko, HistoryRow } from "./Common";
-import { judgePass, todayStr } from "../lib/quiz";
+import { judgePass, todayStr, sortByDateDesc } from "../lib/quiz";
 
-export default function StudentDashboard({ name, entries, onBack, onAddResult, showToast }) {
+const NEW_SUBJECT_VALUE = "__new__";
+
+export default function StudentDashboard({ name, entries, knownSubjects, onBack, onAddResult, showToast }) {
+  const hasKnownSubjects = knownSubjects.length > 0;
+  const [customSubjectMode, setCustomSubjectMode] = useState(!hasKnownSubjects);
   const [subject, setSubject] = useState("");
   const [date, setDate] = useState(todayStr());
   const [max, setMax] = useState("");
@@ -10,8 +14,18 @@ export default function StudentDashboard({ name, entries, onBack, onAddResult, s
   const [submitting, setSubmitting] = useState(false);
   const [justSubmitted, setJustSubmitted] = useState(null);
 
-  const sorted = [...entries].sort((a, b) => b.ts - a.ts);
+  const sorted = sortByDateDesc(entries);
   const latest = sorted[0];
+
+  function handleSubjectSelect(e) {
+    const val = e.target.value;
+    if (val === NEW_SUBJECT_VALUE) {
+      setCustomSubjectMode(true);
+      setSubject("");
+    } else {
+      setSubject(val);
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -35,6 +49,7 @@ export default function StudentDashboard({ name, entries, onBack, onAddResult, s
       setJustSubmitted({ subject: subject.trim(), score: scoreN, max: maxN, pass: judgePass(scoreN, maxN) });
       showToast("記録しました");
       setSubject("");
+      setCustomSubjectMode(!hasKnownSubjects);
       setMax("");
       setScore("");
       setTimeout(() => setJustSubmitted(null), 2500);
@@ -73,13 +88,41 @@ export default function StudentDashboard({ name, entries, onBack, onAddResult, s
           <div className="form-grid">
             <div className="full">
               <label>科目 / テスト名</label>
-              <input
-                type="text"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                placeholder="例: 英単語テスト"
-                required
-              />
+              {!customSubjectMode ? (
+                <select value={subject} onChange={handleSubjectSelect} required>
+                  <option value="" disabled>
+                    選択してください
+                  </option>
+                  {knownSubjects.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                  <option value={NEW_SUBJECT_VALUE}>＋ 新しい科目を入力</option>
+                </select>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    placeholder="例: 英単語テスト"
+                    required
+                  />
+                  {hasKnownSubjects && (
+                    <button
+                      type="button"
+                      className="link-btn"
+                      onClick={() => {
+                        setCustomSubjectMode(false);
+                        setSubject("");
+                      }}
+                    >
+                      一覧から選ぶ
+                    </button>
+                  )}
+                </>
+              )}
             </div>
             <div>
               <label>日付</label>
