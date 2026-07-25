@@ -1,4 +1,4 @@
-import { redis, KEYS } from "../../lib/redis";
+import { KEYS, getJSON } from "../../lib/redis";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -7,8 +7,8 @@ export default async function handler(req, res) {
   }
   try {
     const [roster, results] = await Promise.all([
-      redis.get(KEYS.roster),
-      redis.get(KEYS.results),
+      getJSON(KEYS.roster),
+      getJSON(KEYS.results),
     ]);
     res.status(200).json({ roster: roster || [], results: results || {} });
   } catch (e) {
