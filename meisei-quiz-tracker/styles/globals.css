@@ -95,7 +95,7 @@ body{
 .muted{ color: var(--ink-soft); font-size: 13px; }
 .hidden{ display:none !important; }
 
-input[type=text], input[type=number], input[type=date]{
+input[type=text], input[type=number], input[type=date], select{
   width:100%;
   font-family: var(--font-body);
   font-size: 15px;
@@ -105,8 +105,29 @@ input[type=text], input[type=number], input[type=date]{
   background: #FBFBFD;
   color: var(--ink);
 }
-input:focus-visible{ outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+select{
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%235B6082'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.19l3.71-3.96a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 36px;
+}
+input:focus-visible, select:focus-visible{ outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
 label{ font-size: 12px; color: var(--ink-soft); display:block; margin-bottom: 5px; letter-spacing:0.02em; }
+
+.link-btn{
+  background:none;
+  border:none;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 0 0;
+  cursor:pointer;
+  font-family: var(--font-body);
+}
+.link-btn:hover{ text-decoration: underline; }
 
 .btn{
   font-family: var(--font-body);
