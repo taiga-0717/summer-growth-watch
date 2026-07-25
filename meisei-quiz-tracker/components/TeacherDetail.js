@@ -1,16 +1,16 @@
 import { Header, HistoryRow } from "./Common";
 import LineChart from "./LineChart";
-import { judgePass, scoreRate } from "../lib/quiz";
+import { judgePass, scoreRate, sortByDateAsc, sortByDateDesc } from "../lib/quiz";
 
 export default function TeacherDetail({ name, entries, subject, setSubject, onBack }) {
-  const all = [...entries].sort((a, b) => a.ts - b.ts);
+  const all = sortByDateAsc(entries);
   const subjects = [];
   all.forEach((e) => {
     if (!subjects.includes(e.subject)) subjects.push(e.subject);
   });
 
   const filtered = subject === "ALL" ? all : all.filter((e) => e.subject === subject);
-  const historyList = [...filtered].sort((a, b) => b.ts - a.ts);
+  const historyList = sortByDateDesc(filtered);
   const latest = historyList[0];
 
   return (
