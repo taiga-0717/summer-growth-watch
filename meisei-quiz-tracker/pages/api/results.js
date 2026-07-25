@@ -1,4 +1,4 @@
-import { redis, KEYS } from "../../lib/redis";
+import { KEYS, getJSON, setJSON } from "../../lib/redis";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const results = (await redis.get(KEYS.results)) || {};
+    const results = (await getJSON(KEYS.results)) || {};
     const list = results[studentName] || [];
     const newEntry = {
       id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
@@ -36,7 +36,7 @@ export default async function handler(req, res) {
       ts: Date.now(),
     };
     const updated = { ...results, [studentName]: [...list, newEntry] };
-    await redis.set(KEYS.results, updated);
+    await setJSON(KEYS.results, updated);
     res.status(200).json({ results: updated });
   } catch (e) {
     res.status(500).json({ error: "failed" });
