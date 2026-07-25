@@ -128,6 +128,17 @@ export default function Home() {
     return true;
   }
 
+  async function mergeSubjects(mapping) {
+    const { ok, data } = await postJSON("/api/migrate-subjects", { mapping });
+    if (ok) {
+      setResults(data.results);
+      showToast(`${data.changedCount ?? 0}件の記録を統合しました`);
+      return true;
+    }
+    showToast("統合に失敗しました");
+    return false;
+  }
+
   async function changePasscode() {
     const current = prompt("現在の合言葉を入力してください");
     if (current === null) return;
@@ -197,6 +208,8 @@ export default function Home() {
                 onAddStudent={addStudent}
                 onDeleteStudent={deleteStudent}
                 onChangePasscode={changePasscode}
+                onMergeSubjects={mergeSubjects}
+                showToast={showToast}
               />
             )}
 
