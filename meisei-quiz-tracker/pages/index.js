@@ -65,19 +65,6 @@ export default function Home() {
   // rosterは名前の配列 → LoginScreen/TeacherOverviewが期待する {id, name} 形式に変換
   const rosterItems = useMemo(() => roster.map((name) => ({ id: name, name })), [roster]);
 
-  // これまでに(誰かが)入力した科目名の一覧。新しい順に並べ、プルダウンの選択肢に使う
-  const knownSubjects = useMemo(() => {
-    const seen = new Map(); // subject -> 最新の ts
-    Object.values(results).forEach((list) => {
-      list.forEach((e) => {
-        if (!e.subject) return;
-        const prevTs = seen.get(e.subject);
-        if (prevTs === undefined || e.ts > prevTs) seen.set(e.subject, e.ts);
-      });
-    });
-    return [...seen.entries()].sort((a, b) => b[1] - a[1]).map(([subject]) => subject);
-  }, [results]);
-
   async function addStudent(name) {
     const trimmed = (name || "").trim();
     if (!trimmed) {
@@ -188,7 +175,6 @@ export default function Home() {
               <StudentDashboard
                 name={currentStudent}
                 entries={results[currentStudent] || []}
-                knownSubjects={knownSubjects}
                 onBack={() => {
                   setCurrentStudent(null);
                   setView("login");
